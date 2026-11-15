@@ -14,3 +14,13 @@ El sistema implementa una arquitectura cliente-servidor orientada a microservici
 - **Privilegios Mínimos en Base de Datos:** La aplicación se conecta utilizando el rol `app_ia`, el cual posee únicamente permisos de `CONNECT`, `USAGE`, `SELECT` e `INSERT` sobre la tabla `inferencias`, bloqueando cualquier intento de actualización o borrado (`UPDATE`, `DELETE`, `DROP`).
 - **Manejo de Secretos:** Las credenciales y parámetros sensibles se aíslan en el archivo `.env` (el cual está excluido del control de versiones mediante `.gitignore`), proveyendo una plantilla pública `.env.example` sin datos reales.
 
+## 5. Respaldo y Restauración de Base de Datos
+- **Periodicidad propuesta:** Semanal o tras cada despliegue mayor.
+- **Responsable:** Administrador de Operaciones.
+- **Comando de Respaldo:**
+  ```bash
+  docker compose exec -T db pg_dump -U postgres iadb > backups/respaldo_$(date +%F).sql
+
+- **Comando de Restauración:**
+  ```bash
+  cat backups/respaldo_FECHA.sql | docker compose exec -T db psql -U postgres -d iadb
